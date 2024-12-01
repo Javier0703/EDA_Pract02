@@ -7,13 +7,9 @@ public class Simulador {
 
     public static class VecXY {
         public static VecXY Zero = new VecXY(0,0);
-        
         public float x, y;
-        
         public VecXY(float x, float y) { this.x = x; this.y = y; }
-        
         public void Add(VecXY otro) { x += otro.x; y += otro.y; NOPER += 2; }
-        
         public void Scale(float k) { x *= k; y *= k; NOPER += 2; }
     }   
     
