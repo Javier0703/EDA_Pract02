@@ -1,9 +1,19 @@
+/**
+ * Copyright Universidad de Valladolid 2024
+ */
 package eda2425a;
 
+/**
+ * Implementacion del nuevo SimuladorExt donde solo se veran
+ * el numero de operaciones realizadas y el tiempo que realiza una
+ * simulacion de n Goticulas (10.000, ya que es el idoneo)
+ * @author Javier
+ *
+ */
 public class PruebaSimulador{
     public static void main(String[] args) {
         int n = 10000;  
-        int iteraciones = 10;
+        int iteraciones = 100;
 
         // Crea una instancia del SimuladorExt
         SimuladorExt sim = new SimuladorExt(n);
@@ -22,7 +32,7 @@ public class PruebaSimulador{
         }
 
         // Calcula promedios
-        double promedioNOPER = totalNOPER / (double) iteraciones;
+        long promedioNOPER = totalNOPER / iteraciones;
         double promedioTiempo = totalTime / iteraciones;
 
         // Resultados

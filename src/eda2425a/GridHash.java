@@ -5,44 +5,47 @@ package eda2425a;
 import java.util.*;
 
 /**
- * Implementacion de la clase GridHash
- * Clase que maneja el tamaÒo de cada una de las celdas
+ * Implementaci√≥n de la clase GridHash
+ * Clase que maneja el tama√±o de cada una de las celdas
+ * ahora incluye filtrado de vecinos y mayor flexibilidad
  * @author javcalv
  */
 
 public class GridHash {
-    private final float cellSize;  // TamaÒo de cada celda (puedes ajustarlo seg˙n resultados)
-    private final Map<Integer, List<Simulador.Goticula>> grid;  // HashMap para celdas
+    // Tama√±o de cada celda (puedes ajustarlo seg√∫n resultados)
+    private final float cellSize;  
+    // HashMap para celdas
+    private final Map<Integer, List<Simulador.Goticula>> grid;
 
     public GridHash(float cellSize) {
         this.cellSize = cellSize;
         this.grid = new HashMap<>();
     }
 
-    // Calcula el Ìndice hash de una celda en base a la posiciÛn (x, y)
+    // Calcula el √≠ndice hash de una celda en base a la posici√≥n (x, y)
     private int hash(float x, float y) {
         int cx = (int) Math.floor(x / cellSize);
         int cy = (int) Math.floor(y / cellSize);
         return Objects.hash(cx, cy);
     }
 
-    // Agrega una gotÌcula a su celda correspondiente
+    // Agrega una got√≠cula a su celda correspondiente
     public void add(Simulador.Goticula g) {
         int key = hash(g.x, g.y);
         grid.computeIfAbsent(key, k -> new ArrayList<>()).add(g);
     }
 
-    // Elimina una gotÌcula de su celda
+    // Elimina una got√≠cula de su celda
     public void remove(Simulador.Goticula g) {
         int key = hash(g.x, g.y);
         List<Simulador.Goticula> cell = grid.get(key);
         if (cell != null) {
             cell.remove(g);
-            if (cell.isEmpty()) grid.remove(key);  // Limpia celdas vacÌas
+            if (cell.isEmpty()) grid.remove(key);  // Limpia celdas vac√≠as
         }
     }
 
-    // Obtiene las gotÌculas cercanas a una posiciÛn
+    // Obtiene las got√≠culas cercanas a una posici√≥n
     public List<Simulador.Goticula> getNeighbors(float x, float y) {
         List<Simulador.Goticula> neighbors = new ArrayList<>();
         int cx = (int) Math.floor(x / cellSize);
@@ -59,7 +62,15 @@ public class GridHash {
         return neighbors;
     }
 
-    // Limpia la cuadrÌcula para reorganizarla
+    // Obtiene los vecinos filtrados que est√°n dentro del radio de influencia
+    public List<Simulador.Goticula> getFilteredNeighbors(float x, float y) {
+        List<Simulador.Goticula> neighbors = getNeighbors(x, y);  // Vecinos iniciales
+        // Filtrar por distancia euclidiana <= 1
+        neighbors.removeIf(g -> (g.x - x) * (g.x - x) + (g.y - y) * (g.y - y) > 1);
+        return neighbors;
+    }
+
+    // Limpia la cuadr√≠cula para reorganizarla
     public void clear() {
         grid.clear();
     }

@@ -16,7 +16,7 @@ public class SimuladorExt extends Simulador {
 
     public SimuladorExt(int n) {
         super(n);
-        this.grid = new GridHash(1.0f);  // Tamaño de celda ajustable (1.0f es un buen inicio)
+        this.grid = new GridHash(0.9f);  // Tamaño de celda ajustable
         ReestructuraED();
     }
 
