@@ -40,4 +40,3 @@ public class PruebaSimulador{
         System.out.println("Promedio de tiempo por iteración (ms): " + promedioTiempo);
     }
 }
-

@@ -1,64 +1,112 @@
-/**
- * Copyright Universidad de Valladolid 2024
- */
-
 package eda2425a;
 import java.util.*;
 
-/**
- * Implementacion de SimuladorExt
- * @author javcalv
- *
- */
-
 public class SimuladorExt extends Simulador {
-    private GridHash grid;  // Instancia de la cuadrícula hash
+
+    // Grid dimensions
+    private int numCellsX, numCellsY;
+    private float cellSizeX, cellSizeY;
+    private List<Goticula>[][] grid;
 
     public SimuladorExt(int n) {
         super(n);
-        this.grid = new GridHash(0.9f);  // Tamaño de celda ajustable
-        ReestructuraED();
-    }
-
-    // Sobrescribimos ReestructuraED para reorganizar las gotículas en la cuadrícula (a nuestro tamaño)
-    @Override
-    protected void ReestructuraED() {
-        grid.clear();
-        for (Goticula g : gotas) {
-            grid.add(g);
+        // Initialize grid based on lx and ly
+        cellSizeX = 1.0f; // Adjust based on lx and n
+        cellSizeY = 1.0f; // Adjust based on ly and n
+        numCellsX = (int) Math.ceil(lx / cellSizeX);
+        numCellsY = (int) Math.ceil(ly / cellSizeY);
+        grid = new List[numCellsX][numCellsY];
+        for (int i = 0; i < numCellsX; i++) {
+            for (int j = 0; j < numCellsY; j++) {
+                grid[i][j] = new ArrayList<>();
+            }
         }
     }
 
-    // Optimización de CalcDensidad para usar vecinos cercanos
+    @Override
+    protected void ReestructuraED() {
+        // Clear the grid
+        for (int i = 0; i < numCellsX; i++) {
+            for (int j = 0; j < numCellsY; j++) {
+                grid[i][j].clear();
+            }
+        }
+        // Assign each droplet to its cell
+        for (Goticula g : gotas) {
+            int cellX = (int) (g.x / cellSizeX);
+            int cellY = (int) (g.y / cellSizeY);
+            if (cellX < 0) cellX = 0;
+            if (cellX >= numCellsX) cellX = numCellsX - 1;
+            if (cellY < 0) cellY = 0;
+            if (cellY >= numCellsY) cellY = numCellsY - 1;
+            grid[cellX][cellY].add(g);
+        }
+    }
+
     @Override
     protected float CalcDensidad(float x, float y) {
         float densidad = 0;
-        List<Goticula> vecinos = grid.getNeighbors(x, y);  // Solo gotículas cercanas
-        for (Goticula g : vecinos) {
-            densidad += CalcDensidadIter(x, y, g);
+        // Determine which cells to consider
+        int cellX = (int) (x / cellSizeX);
+        int cellY = (int) (y / cellSizeY);
+        // Iterate over neighboring cells
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int neighborX = cellX + dx;
+                int neighborY = cellY + dy;
+                if (neighborX >= 0 && neighborX < numCellsX && neighborY >= 0 && neighborY < numCellsY) {
+                    for (Goticula g : grid[neighborX][neighborY]) {
+                        densidad += CalcDensidadIter(x, y, g);
+                    }
+                }
+            }
         }
         return densidad;
     }
 
-    // Optimización de CalcPresion
     @Override
     protected VecXY CalcPresion(Goticula gi) {
         VecXY f = new VecXY(0, 0);
-        List<Goticula> vecinos = grid.getNeighbors(gi.x, gi.y);  // Solo vecinos cercanos
-        for (Goticula gj : vecinos) {
-            f.Add(CalcPresionIter(gi, gj));
+        // Determine which cells to consider
+        int cellX = (int) (gi.xa / cellSizeX);
+        int cellY = (int) (gi.ya / cellSizeY);
+        // Iterate over neighboring cells
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int neighborX = cellX + dx;
+                int neighborY = cellY + dy;
+                if (neighborX >= 0 && neighborX < numCellsX && neighborY >= 0 && neighborY < numCellsY) {
+                    for (Goticula gj : grid[neighborX][neighborY]) {
+                        if (gi != gj) {
+                            f.Add(CalcPresionIter(gi, gj));
+                        }
+                    }
+                }
+            }
         }
         f.Scale(1 / gi.d);
         return f;
     }
 
-    // Optimización de CalcViscosidad
     @Override
     protected VecXY CalcViscosidad(Goticula gi) {
         VecXY f = new VecXY(0, 0);
-        List<Goticula> vecinos = grid.getNeighbors(gi.x, gi.y);  // Solo vecinos cercanos
-        for (Goticula gj : vecinos) {
-            f.Add(CalcViscosidadIter(gi, gj));
+        // Determine which cells to consider
+        int cellX = (int) (gi.xa / cellSizeX);
+        int cellY = (int) (gi.ya / cellSizeY);
+        // Iterate over neighboring cells
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int neighborX = cellX + dx;
+                int neighborY = cellY + dy;
+                if (neighborX >= 0 && neighborX < numCellsX && neighborY >= 0 && neighborY < numCellsY) {
+                    for (Goticula gj : grid[neighborX][neighborY]) {
+                        if (gi != gj) {
+                            f.Add(CalcViscosidadIter(gi, gj));
+                        }
+                    }
+                }
+            }
         }
         return f;
     }
