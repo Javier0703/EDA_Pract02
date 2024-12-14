@@ -22,18 +22,18 @@ public class PruebaSimulador{
         System.out.println("----------------------------------------");
 
         // Ejecuta múltiples pasos de simulación
-        long totalNOPER = 0;
-        double totalTime = 0;
+        long NOPER = 0;
+        double tiempoTotal = 0;
 
         for (int i = 0; i < iteraciones; i++) {
-            sim.PasoSimulacion();  // Ejecuta un paso
-            totalNOPER += Simulador.NOPER;  // Suma el número de operaciones
-            totalTime += sim.tpo;  // Suma el tiempo de ejecución de este paso
+            sim.PasoSimulacion();
+            NOPER += Simulador.NOPER;
+            tiempoTotal += sim.tpo;
         }
 
         // Calcula promedios
-        long promedioNOPER = totalNOPER / iteraciones;
-        double promedioTiempo = totalTime / iteraciones;
+        long promedioNOPER = NOPER / iteraciones;
+        double promedioTiempo = tiempoTotal / iteraciones;
 
         // Resultados
         System.out.println("Promedio de operaciones (NOPER): " + promedioNOPER);

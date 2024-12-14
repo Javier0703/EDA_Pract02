@@ -9,11 +9,8 @@ package eda2425a;
  */
 public class Visualizador {
     public static void main(String[] args) {
-    	// Numero de goticulas
         int n = 10000; 
-        // Simulamos el programa con nuestro simulador
         SimuladorExt sim = new SimuladorExt(n); 
-        //Realizamos un paso de 600 PasoSimulacion e instanciamos la interfaz.
         for(int i = 0; i < 600; i++) {sim.PasoSimulacion();	}
         javax.swing.SwingUtilities.invokeLater(() -> { new GUIPtos(sim);});
     }
